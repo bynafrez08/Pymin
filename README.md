@@ -1,4 +1,3 @@
-# Admin_linux_python
 # Administración de linux en python
 
 Esto es un programa en linea de comando para que puedas administrar los siguientes servicios en linux con facilidad y evitar escribir comandos complejos.
