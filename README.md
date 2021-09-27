@@ -9,7 +9,7 @@ Puedes administrar servicios de linux como:
 3- isc-dhcp-server
 4- SSH
 
-# para ejecutar el programas tenemos que utilizar el siguiente comando:
+### para ejecutar el programas tenemos que utilizar el siguiente comando:
 
 git clone https://github.com/nafsuuddini08/Admin_linux_python/
 cd Admin_linux_python
@@ -25,7 +25,7 @@ You can manage linux services like:
 3- isc-dhcp-server
 4- SSH
 
-# to run the programs we have to use the following command:
+### to run the programs we have to use the following command:
 
 git clone https://github.com/nafsuuddini08/Admin_linux_python/
 cd Admin_linux_python
