@@ -10,7 +10,7 @@ Puedes administrar servicios de linux como:
 - isc-dhcp-server
 - SSH
 
-### para ejecutar el programa tenemos que utilizar el siguiente comando:
+### para ejecutar el programa tenemos que utilizar los siguientes comando:
 
 1. git clone https://github.com/nafsuuddini08/Admin_linux_python/
 2. cd Admin_linux_python
