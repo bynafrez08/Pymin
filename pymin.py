@@ -25,7 +25,7 @@ def pymin_menu():
         
         #Fem una serie de prints per a que el usuari pugui veurels 
         #i seleccionar una de les opcions
-        print ("\nMENU SUPER CHULO\n")
+        print ("\nMENU ADMIN_LINUX_PYTHON\n")
         print ("\t1.- Administració d'usuaris a linux")
         print ("\t2.- Web - Apache ")
         print ("\t3.- SSH ")

@@ -1,5 +1,7 @@
 # Administración de linux en python
 
+##### Solo funciona en sistemas linux
+
 Esto es un programa en linea de comando para que puedas administrar los siguientes servicios en linux con facilidad y evitar escribir comandos complejos.
 
 Puedes administrar servicios de linux como:
@@ -16,6 +18,8 @@ Puedes administrar servicios de linux como:
 
 # Linux administration in python
 
+##### Only works on linux systems
+
 This is a command line program so that you can manage the following services in linux with ease and avoid typing complex commands.
 
 You can manage linux services like:
@@ -29,3 +33,4 @@ You can manage linux services like:
 1. git clone https://github.com/nafsuuddini08/Admin_linux_python/
 2. cd Admin_linux_python
 3. sudo python3 pymin.py
+
