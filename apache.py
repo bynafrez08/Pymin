@@ -3,113 +3,109 @@ import sys
 import subprocess
 import time
 
-#ver el estado de instalación de apache.
-def estado_instalacion():
+#view apache installation status.
+def status_installation():
     os.system("dpkg --get-selections | grep apache")
 
-#instalar apache2
-
+#install apache2
 def install_apache():
-    os.system("sudo apt install apache2")
+    os.system("sudo apt-get install apache2")
 
-#ver el estado del servicio apache.
-def estado_apache():
-    os.system("sudo service apache2 status")
-    os._exit(1)
+#show the apache service status.
+def apache_status():
+    stat = subprocess.call(["systemctl", "is-active", "--quiet", "apache2"])
+    if(stat == 0):# if 0 (active), print "Active"
+        print("Apache -> is running")
+    else:
+        print("Apache -> is NOT running")
+        moredetail = input("more detail about why is not running?[y/n]: ")
+        if(moredetail == "y"):
+            os.system("service apache2 status")
 
-#parte de programa para listar los sitios disponibles
-def listar_sites():
-    print("Estos son los sitos disponibles: \n")
-    listarr = os.listdir("/etc/apache2/sites-available")#utilizar la siguiente ruta para mostara los sitios disponibles.
-    print (listarr)
+#list sites available 
+def list_sites():
+    print("These are the available sites: \n")
+    os.system("ls /etc/apache2/sites-available")
+    #listarr = os.listdir("/etc/apache2/sites-available")
+    #print (listarr.replace('[', ''))
 
-#ver lo sitios habilitados
-def listar_habilitados():
-    print("Estos son los sitios habilitados: \n")
-    listarhabi = os.listdir("/etc/apache2/sites-enabled")
-    print (listarhabi)
+#list enbled sites
+def list_enable():
+    print("These are the enabled sites: \n")
+    listena = os.listdir("/etc/apache2/sites-enabled")
+    print (listena)
 
-#encender/apagar/reinicar-apache
-def canviar_estado_apache():
+#start/stop/restart apache
+def change_apache_status():
 
-    estat = input("\nEncender / Apagar / Reiniciar :")
+    estat = input("\nstart / stop / restart :")
     
-    if estat == "Encender":
+    if estat == "start":
         
-        print("Encendiendo el servicio apache...\n")
+        print("Starting the apache service...\n")
     
         os.system("sudo service apache2 start")
         
         time.sleep(2)
 
-        print("Servecio apache encendido\n")
+        print("Apache service start successfully\n")
                 
-    elif estat == "Apagar":
+    elif estat == "stop":
                         
-        print("Apagando el servicio...\n")
+        print("Stopping the service...\n")
 
         os.system("sudo service apache2 stop")
     
         time.sleep(2)
 
-        print("Servicio apache apagado\n")
+        print("Apache service successfully stopped\n")
 
-    elif estat == "Reiniciar":
+    elif estat == "restart":
         
-        print("Reiniciando el servicio..\n")
+        print("Restarting the apache service...\n")
 
         os.system("sudo service apache2 restart")
     
         time.sleep(2)
 
-        print("Servicio apache reiniciado\n")
+        print("Apache service successfully restarted\n")
     
     else:
         print ("")
-        input("No has sleccionat ninguna opció correcta...\nprem qualsevol tecla per continuar")
+        input("Please select the correct option...\npress any key to continue")
 
 
+#enable and disable the apache service.
+def ed():
+    options = input("Do you want to enable or disable site?[e/d]: ")
+    if options == "e":
+        option1 = input("Put the domain name to enable: ")
+        print("enabling the site...")
+        os.system("a2ensite "+option1+" 1> /dev/null")
+        time.sleep(2)
+        os.system("service apache2 reload")
+        print("reloading the site...")
 
-#parte de programa para habilitar y deshabilitar sitios.
-def hd():
-    entero = input("Quires habilitar o deshabilitar sitio?[h/d]: ")
-    #condicion si el usaurio pone h es para habiliar y si pone d para deshabilitar, y que dependiando lo que haya escogido le ejecutara los siguentes comando.
-    if (entero == "h"):
-        entero2 = input("Pon el nombre del sitio que quieres hanilitar: ")
-        subprocess.call(["a2ensite", entero2])#utilizar el comando a2ensite para habilitar los sitios.
-        restart = subprocess.run(['systemctl reload apache2'], shell=True)
-        print(restart)
-    elif (entero == "d"):
-        entero3 = input("Pon el nombre del sitio que quieres hanilitar: ")
-        subprocess.call(["a2dissite", entero3])#utilizar el comando a2dissite para deshabilitar sitios.
-        restart = subprocess.run(['systemctl reload apache2'], shell=True)
-        print(restart)
-    else:
-        print ("Error")    
-
-def crear_sites():
-    #global vhost
-    #input
-    #vhost = entero2()
-    vhost = input("Pon un nombre de dominio para tu sitio virtual: ")
-    cmd = "mkdir /var/www/{0}".format(vhost)#cuando el usuario pone el nombre del sitios se le va a crear una carpeta en la ruta de /var/www
+#create sites
+def create_sites():
+    vhost = input("Put the domain name of your vhost: ")
+    cmd = "mkdir /var/www/{0}".format(vhost)#when the virtual host is created, a test page will be created in the var/www route to verify the site is hosted correctly, this part it's not very important.
     os.system(cmd)
     
-    #añadir permisos
+    #add permissions
     cmd = "chown -R $USER:$USER /var/www/{0}".format(vhost)
     os.system(cmd)
     
     cmd = "chmod -R 755 /var/www/{0}".format(vhost)
     os.system(cmd)
     
-    
-    #crear un fichero html cuando el usuario haya creado el sitio.
+    #create an index.html file for that test web page (remember that this is not necessary to do, but it's for check if your vhost is hosting correctly).
     filename = '/var/www/{0}/index.html'.format(vhost)
     f = open(filename, 'w')
-    f.write("<html><head><title>Hola que hace</title></head><body><h1>Holaaaaaaa</h1></body></html>")
+    f.write("<html><head><title>MySite</title></head><body><h1>Hi! this a test webpage</h1></body></html>")
     f.close()
     
-    #lo que contendra el fichero de conf del sitio que haya creado el usuario.
+    #which will contain the conf file of the site that the user has created.
     filename = '/etc/apache2/sites-available/{0}.conf'.format(vhost)
     filecontent = """<VirtualHost *:80>\r\n
                     ServerAdmin webmaster@localhost\r\n
@@ -124,72 +120,89 @@ def crear_sites():
     f.write(filecontent)
     f.close()
     
-    #habilitar el sitio que haya creado el usuario
-    cmd = "a2ensite {0}".format(vhost)
-    os.system(cmd)
+    #enable the site the user created.
+    print("enabling the site ...\n")
+    time.sleep(2)
+    os.system("a2ensite {0} 1> /dev/null".format(vhost))
     
-    #deshabilitar el sitio por defecto
-    cmd = "a2dissite 000-default.conf"
-    os.system(cmd)
+    #disable site by default.
+    #cmd = "a2dissite 000-default.conf"
+    #os.system(cmd)
     
-    #mostrara el comando de conf
-    cmd = "apache2ctl configtest"
-    os.system(cmd)
+    #check of the config file of your site is OK.
+    #cmd = "apache2ctl configtest"
+    #os.system(cmd)
     
-    #reiniciar apache2
-    cmd = "systemctl restart apache2"
-    os.system(cmd)
+    #reload apache
+    print("reloading the service...\n")
+    time.sleep(2)
+    os.system("service apache2 reload")
+
+    #restart apache2
+    print("restarting the service...\n")
+    time.sleep(2)
+    os.system("service apache2 restart")
+    time.sleep(2)
+    print("site created successfully...")
+
+    #in the /etc/hosts file we are going to add the domain name so that when accessing from the browser the virtual hosting applies to us.
+    hosts = vhost
+    with open("/etc/hosts", "a") as a_file: #remove the "a" in a_file
+        a_file.write("\n127.0.0.1\t" + vhost)
+        #a_file.write(vhost)
+
 
 #menu
 def menu_apache():
-    print("=====================Ejecuta una opción=======================")
-    print("=1. Ver el estado de instalación.                            =")
-    print("=2. Instalar apache.                                         =")
-    print("=3. Ver el estado del servicio.                              =")
-    print("=4. Encender / Apagar / Reinicar.                            =")
-    print("=5. Listar sitios disponibles.                               =")
-    print("=6. Habilitar/Deshabilitar sitios.                           =")
-    print("=7. Crear sitios.                                            =")
-    print("=8. Listar sitios habilitados.                               =")
-    print("=9. Exit.                                           		=")
-    print("=====================Fin del programa=========================")
-
-    #parte de la función menu.
     while True:
+        #which waits a few seconds to display the output.
+        time.sleep(2)
+        #execute the command so that the outputs are cleaned and the menu is more pleasant.
+        os.system("clear")
+        #menu options
+        print("Web - Apache\n")
+        print("\t1.- View installation status")
+        print("\t2.- Install apache")
+        print("\t3.- View service status")
+        print("\t4.- Start/Stop/Restart the service")
+        print("\t5.- List availabe site")
+        print("\t6.- Enable/Disable sites")
+        print("\t7.- Create Sites")
+        print("\t8.- List enable sites")
+        print("\t9.- Exit menu")            
         
-        option = input("Ingresa una opción: ")
+        #condition for the menu options.
+        option = input("\nSelect Any option: ")
         
         if option == "1":
-            estado_instalacion()
+           status_installation() 
 
         elif option == "2":
             install_apache()
 
         elif option == "3":
-            estado_apache()
+            apache_status()
 
         elif option == "4":
-            canviar_estado_apache()
+            change_apache_status()
 
         elif option == "5":
-            listar_sites()
+            list_sites()
 
         elif option == "6":
-            hd()
+            ed()
         
         elif option == "7":
-            crear_sites()
+            create_sites()
 
         elif option == "8":
-            listar_habilitados()
+            list_enable()
 
         elif option == "9":
-            print("\nCHAO :)")
+            print("\nBye :)")
+            os.system('clear')
             break
         
         else:
             print ("")
-            input("No has pulsado ninguna opción correcta...\npulsa una tecla para continuar")
-
-         
-        
+            input("Please choose the correct option...\npress any key to continue")

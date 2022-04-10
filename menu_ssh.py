@@ -251,7 +251,7 @@ def menu_ssh():
     
         #Fem una serie de prints per a que el usuari pugui veurels 
         #i seleccionar una de les opcions
-        print ("MENU SUPER CHULO\n")
+        print ("Manage SSH\n")
         print ("\t1.- Mostrar Última data de generació de claus del servidor ssh")
         print ("\t2.- Comprovar si SSH esta instal·lat ")
         print ("\t3.- Estat del servei SSH ")
