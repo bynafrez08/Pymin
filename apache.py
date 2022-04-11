@@ -18,9 +18,11 @@ def apache_status():
         print("Apache -> is running")
     else:
         print("Apache -> is NOT running")
-        moredetail = input("more detail about why is not running?[y/n]: ")
-        if(moredetail == "y"):
+        statuscommand = input("Dou you want to check more datail why it not running?[y/n]: ")
+        if(statuscommand == "y"):
+            print("Press Q to exit")
             os.system("service apache2 status")
+
 
 #list sites available 
 def list_sites():
@@ -77,16 +79,23 @@ def change_apache_status():
 
 #enable and disable the apache service.
 def ed():
-    options = input("Do you want to enable or disable site?[e/d]: ")
+    options = input("Do you want to enable or disable site?[e/d]: ") 
     if options == "e":
         option1 = input("Put the domain name to enable: ")
         print("enabling the site...")
         os.system("a2ensite "+option1+" 1> /dev/null")
         time.sleep(2)
         os.system("service apache2 reload")
-        print("reloading the site...")
+    elif options == "d":
+        option2 = input("put the domain name to disable the site: ")
+        print("disabling the site...")
+        os.system("a2dissite "+option2+" 1> /dev/null")
+        time.sleep(2)
+        os.system("service apache2 reload")
+    else:
+        print("Error..Please choose the correct option")
 
-#create sites
+#create virtual hosts
 def create_sites():
     vhost = input("Put the domain name of your vhost: ")
     cmd = "mkdir /var/www/{0}".format(vhost)#when the virtual host is created, a test page will be created in the var/www route to verify the site is hosted correctly, this part it's not very important.
@@ -151,6 +160,22 @@ def create_sites():
         a_file.write("\n127.0.0.1\t" + vhost)
         #a_file.write(vhost)
 
+#delete the site and the config files of that site.
+def delete_site():
+    delete_site_name = input("Put the domain name of the site that you want to delete: ")
+    print("Disabling the site...")
+    os.system("a2dissite "+delete_site_name+" 1> /dev/null")
+    time.sleep(2)
+    print("Reloading the service...")
+    os.system("service apache2 reload")
+    print("Deleting files of the site...")
+    os.system("rm -r /var/www/{0}".format(delete_site_name))
+    os.system("rm /etc/apache2/sites-available/{0}.conf".format(delete_site_name))
+    os.system("rm /var/lib/apache2/site/disabled_by_admin/{0}".format(delete_site_name))
+    time.sleep(2)
+    print("removing the domain name in /etc/hosts...")
+    #remove the line which have that particular domain name that the user specify in the /etc/hosts file.
+    os.system("sed -i '/"+delete_site_name+"/d' /etc/hosts")
 
 #menu
 def menu_apache():
@@ -169,7 +194,8 @@ def menu_apache():
         print("\t6.- Enable/Disable sites")
         print("\t7.- Create Sites")
         print("\t8.- List enable sites")
-        print("\t9.- Exit menu")            
+        print("\t9.- Delete site")
+        print("\t10.- Exit menu")            
         
         #condition for the menu options.
         option = input("\nSelect Any option: ")
@@ -199,6 +225,9 @@ def menu_apache():
             list_enable()
 
         elif option == "9":
+            delete_site()
+
+        elif option == "10":
             print("\nBye :)")
             os.system('clear')
             break

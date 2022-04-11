@@ -5,14 +5,14 @@ PYMIN - Make easy
 #Import moduls
 import os
 import time
-from adminlinux import menu_admin_linux
+from manageusers import menu_manageusers
 from apache import menu_apache
-from menu_ssh import menu_ssh
-from menu_pla_dhcp import menu_dhcp
+from ssh import menu_ssh
+from dhcp import menu_dhcp
 
 def pymin_menu(): 
     while True:
-        print ("\nWELCOME TO PYMIN\n")
+        os.system("figlet -w 100 Welcome to Pymin")
         print ("\t1.- Manage users and groups")
         print ("\t2.- Web - Apache ")
         print ("\t3.- SSH ")
@@ -23,7 +23,7 @@ def pymin_menu():
         opcionMenu = input("\nSelect any option: ")
     
         if opcionMenu == "1":
-            menu_admin_linux()
+            menu_manageusers()
             
         elif opcionMenu == "2":
             menu_apache()
