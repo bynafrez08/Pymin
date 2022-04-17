@@ -1,10 +1,9 @@
+#!/usr/bin/env python
 """
 PYMIN - Make easy
 """
-
 #Import moduls
-import os
-import time
+import os, readline #import readline to avoid "[[D" charcters in a stdin.
 from manageusers import menu_manageusers
 from apache import menu_apache
 from ssh import menu_ssh
@@ -42,5 +41,4 @@ def pymin_menu():
         else:
             print ("")
             input("Please select the correct option...\npress any key to continue")
-
 pymin_menu()

@@ -1,78 +1,71 @@
-"""
-MENU DHCP
+#!/usr/bin/env python
 
-"""
-
-#importem los módulos necesarios
 import os
 import time
+import subprocess
+from 
 
-#VEURE SI DHCP ESTA INSTALADO
-#Utlitzem la siguiente comando para comprobar si dhcp esta instalado
-def veure_dhcp():
+#Check if the user have install it the dhcp server.
+def installation_status():
     os.system("apt list | grep isc-dhcp-server")
 
-#ESTAT DEL SERVICIO
+#Check the dhcp service status
 
 def estat_servei_dhcp():
-        
     os.system("sudo service isc-dhcp-server status")
-
     time.sleep(5)
 
-#shutdown, restart, status, start
+#stop, restart, status, start
 
 def canviar_estat_dhcp():
 
-    estat = input("\nStart / Shutdwon / Restart :")
+    estat = input("\nstart / stop / restart :")
     
-    if estat == "Start":
+    if estat == "start":
         
-        print("Poniendo en marcha el servicio...\n")
+        print("Starting the dhcp service...\n")
     
         os.system("sudo service isc-dhcp-server start")
         
         time.sleep(2)
 
-        print("Servicio dhcp marcha\n")
+        print("Dhcp service start successfully\n")
                 
-    elif estat == "Shutdown":
+    elif estat == "stop":
                         
-        print("Parando el servidor...\n")
+        print("Stopping the service...\n")
 
         os.system("sudo service isc-dhcp-server stop")
     
         time.sleep(2)
 
-        print("Servidor DHCP parado\n")
+        print("dhcp service successfully stopped\n")
 
-    elif estat == "Restart":
+    elif estat == "restart":
         
-        print("Reiniciando el servicio..\n")
+        print("Restarting the service..\n")
 
         os.system("sudo service isc-dhcp-server restart")
     
         time.sleep(2)
 
-        print("Servicio dhcp marcha\n")
+        print("dhcp service restarted successfully\n")
     
     else:
         print ("")
-        input("No seleccionado ninguna opción correcta ...\n pulsa cualquier tecla para continuar")
+        input("Please select the correct option...\npress any key to continue")
 
-#INSTALAR DHCP
-
-#utlitzem os.system para ejecutar un pedido en el terminal de linux.
+#install dhcp in the case that the user have not installet yet.
 def install_dhcp():
     os.system("sudo apt -y install isc-dhcp-server ")
 
 #MOSTRAR SITIOS ACTIVOS Y DISPONIBLES
-def mostrar_llocs():
+'''def mostrar_llocs():
 
     #open dhcpd.conf 
     file = open("/etc/dhcp/dhcpd.conf", "r")
 
-    print("\nSi no tienes ninguna subred ni host create no se mostrará nada\n")
+    print("\nIf you don't have any subnet or host created it don't output anything\n")
     print("\nLugares disponibles y activos: ")
     
      #Especifiquem las lines que queremos que se muestren en pantalla
@@ -89,42 +82,23 @@ def mostrar_llocs():
 
     time.sleep(5)
 
-    file.close()
+    file.close()'''
 
-#MAX_LEASE_TIME
 
-def canviar_max_lease_time():
+#set MAX_LEASE_TIME
 
-    #obrim el dhcp.conf y leemos el fichero para guardar su
-     #contingut en la variable fecha
-    with open('/etc/dhcp/dhcpd.conf', 'r') as f:
-        data = f.readlines()
-
-    #Utlitzem print para mostrar en pantalla cuál es el max_lease actual
-     #Aixo lo hacemos al especificar el numero de linea dentro del dhcp.conf que queremos mostrar
-     #EN este caso la fila 13 cuento por defecto el max-lease, y utilizaremos el mismo con los otros archivos
-    print("\nmax-lease-time actual: \n")
-    print(data[13])
-
-    #crear una variable per a que el usuario escriba el nuevo variable de max-lease
-    nou_max = input("Modifica el max-lease-time (Has d'escriure el següent): \nmax-lease-time 600; (o el numero que vulguis): ")
+def change_max_lease_time(): 
+    output_actual_max =  subprocess.Popen("cat /etc/dhcp/dhcpd.conf | awk '/max-lease-time/{print; exit}' | sed -e 's/\<max-lease-time\>//g' | sed 's/[;]//g'", shell=True, stdout=subprocess.PIPE).stdout
+    output_lease =  output_actual_max.read()
+    print("Here is your actual MAX_LEASE_TIME in your system:", output_lease.decode())
     
-    #Como en el caso anterior abrimos el archivo pero en este caso modo escritura
-    #escribimos la variable introducida por un usuario a la linea 13
-    data[13] = nou_max + "\n"
-    with open('/etc/dhcp/dhcpd.conf', 'w') as f:
-        f.writelines(data)
-        f.close()
-
-    with open('/etc/dhcp/dhcpd.conf', 'r') as f:
-        data = f.readlines()
-
-    #pera terminar volvemos a mostrar por pantalla el max-lease actual.
-    print("\nmax-lease-time actual: \n")
-    print(data[13])
-    f.close()
-
-
+    #quit_max_lease = "max-lease-time"
+    #os.system("sed -i '/"+max-lease-time+"/d' /etc/dhcp/dhcpd.conf")
+    time.sleep(2)
+    new_max = input("Modify max-lease-time (You must type the following): \ max-lease-time 600; (or the number that you want): ")
+    filereplace("/etc/dhcp/dhcp.conf", output_actual_max ,"{0}".format(new_max))
+    #with open('/etc/dhcp/dhcpd.conf', 'r+') as f:
+        
 
 #DEFAULT_LEASE_TIME
 
@@ -218,7 +192,7 @@ def menu_dhcp():
     while True:
         
         #simplement esperem 4 segons per donar temps a llegir els resultats
-        time.sleep(5)
+        time.sleep(2)
 
         #executem la comanda clear per a fer mes agradable l'execució del menu
         os.system("clear")
@@ -246,7 +220,7 @@ def menu_dhcp():
             install_dhcp()
 
         elif opcionMenu == "2":
-            veure_dhcp
+            installation_status()
 
         elif opcionMenu == "3":
             estat_servei_dhcp()
@@ -254,11 +228,11 @@ def menu_dhcp():
         elif opcionMenu == "4":
             canviar_estat_dhcp()
             
-        elif opcionMenu == "5":
-            mostrar_llocs()
+        #elif opcionMenu == "5":
+        #    mostrar_llocs()
             
         elif opcionMenu == "6":
-            canviar_max_lease_time()
+            change_max_lease_time()
             
         elif opcionMenu == "7":
             canviar_default_lease_time()

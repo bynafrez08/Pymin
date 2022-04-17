@@ -1,30 +1,35 @@
+
+#!/usr/bin/env python
+
 import os, time
 import sys
-import crypt
-import bcrypt
 import subprocess
-import getpass
 
 #shows users home directories
 def show_home_directories():
     print("This is all the users home directories: \n")
-    list_home = os.listdir("/home")#use os.listdir function to list the content in particular directory.
-    print (list_home)
+    os.system("ls /home")#use os.listdir function to list the content in particular directory.
 
-#list all users
-def list_all_users():
-    os.system("")
+#def list_all_users():
 
-#list groups
-def list_groups():
-    print("")
 
 #create a user.
+#def create_user(): # more simple way to create user using adduser. If you want you can remove the other function and use this one.
+#    username = input("Put the name of the user that you want to create: ")
+#    os.system("adduser "+username+"")
+
 def create_user():
     username = input("Put the name of the user that you want to create: ")
-    password = getpass.getpass("Password for the user: ")
-    encrypass = bcrypt.hashpw(password, bcrypt.gensalt())
-    os.system("useradd -p "+encrypass+" "+username+"")
+    print("creating the user and the working directory...")
+    os.system("useradd -m "+username+" "+username+"")
+    time.sleep(2)
+    print("password required...")
+    os.system("passwd "+username+"")
+    time.sleep(2)
+    print("setting a proper shell...")
+    os.system("usermod "+username+" -s /bin/bash")
+    print("Done.")
+        
 
 #delete user
 def user_del():
@@ -32,8 +37,8 @@ def user_del():
     print("deleting the user...")
     os.system("userdel "+deleteusername+"")
     time.sleep(2)
-    print("user deleted successfully...")
-
+    os.system("rm -r /home/{0}".format(deleteusername))
+       
 #create group
 def create_group():
     groupname = input("Put the name of the group that you want to create: ")
@@ -47,39 +52,38 @@ def delete_group():
     print("Deleting "+deletegroupname+" group...")
     time.sleep(2)
     os.system("groupdel "+deletegroupname+"")
-    #if(deletegroupname == sys.stderr):
-    #    print("Sry Group doesn't exits")
-    #else:
-    #    print("Group deleted successfully...")
-
+    
 #add users in a group
 def add_user_in_group():
     usernametoadd = input("Username to add a group: ")
     groupname = input("Group name to add: ")
     print("Adding the user "+usernametoadd+" in a group "+groupname+"...")
     time.sleep(2)
-    os.system("usermod -aG "+groupname+" "+usernametoadd+"")
-    #if usernametoadd == 2:
-    #    print("Error...User doesn't exits")
-    #elif groupname == 2:
-    #    print("Error...Group doesn't exist")
+    command = os.system("usermod -aG "+groupname+" "+usernametoadd+"")
 
 #remove user in a group
 def remove_user_group():
     userremove = input("Username to remove: ")
-    groupname = input("Group name to remove user: ")
+    groupname = input("Group name to remove the user "+userremove+": ")
     time.sleep(2)
     os.system("gpasswd -d "+userremove+" "+groupname+"")
-
+            
 #change users shells
 def change_user_shell():
     username = input("Username to change a shell: ")
-    shells = input("What type of shell do you want for the user "+username+": ")
+    print("This is the shells that you can use on your system:\n")
+    time.sleep(2)
+    os.system("chmod +x relevant_scripts/shell.sh")
+    os.system("./relevant_scripts/shell.sh")
+    shells = input("\nWhat type of shell do you want for the user "+username+"?: ")
     time.sleep(2)
     os.system("usermod "+username+" -s /bin/{0}".format(shells))
 
-#change users permissions
-#def change_user_permissions():
+#change users passwords.
+def change_user_password():
+    username = input("Username that you want to change the password: ")
+    os.system("passwd "+username+"")
+
 
 
 #menu
@@ -111,11 +115,11 @@ def menu_manageusers():
         if option == "1":
            show_home_directories() 
 
-        elif option == "2":
-            ()
+        #elif option == "2":
+            #list_all_users()
 
-        elif option == "3":
-            ()
+        #elif option == "3":
+            #list_groups()
 
         elif option == "4":
             create_user()
@@ -128,7 +132,7 @@ def menu_manageusers():
         
         elif option == "7":
             delete_group()
-
+        
         elif option == "8":
             add_user_in_group()
 
@@ -138,7 +142,13 @@ def menu_manageusers():
         elif option == "10":
             change_user_shell()
 
-        elif option == "11":
+        #elif option == "11":
+            #change_user_permissions()
+
+        elif option == "12":
+            change_user_password()
+
+        elif option == "13":
             print("\nBye :)")
             os.system('clear')
             break

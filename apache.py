@@ -1,7 +1,10 @@
+#!/usr/bin/env python
+
 import os
 import sys
 import subprocess
 import time
+from termcolor import colored
 
 #view apache installation status.
 def status_installation():
@@ -20,7 +23,7 @@ def apache_status():
         print("Apache -> is NOT running")
         statuscommand = input("Dou you want to check more datail why it not running?[y/n]: ")
         if(statuscommand == "y"):
-            print("Press Q to exit")
+            print(colored("Press Q to exit", 'red'))
             os.system("service apache2 status")
 
 
@@ -97,7 +100,7 @@ def ed():
 
 #create virtual hosts
 def create_sites():
-    vhost = input("Put the domain name of your vhost: ")
+    vhost = input("Put the domain name of your vhost [example.com]: ")
     cmd = "mkdir /var/www/{0}".format(vhost)#when the virtual host is created, a test page will be created in the var/www route to verify the site is hosted correctly, this part it's not very important.
     os.system(cmd)
     
@@ -192,7 +195,7 @@ def menu_apache():
         print("\t4.- Start/Stop/Restart the service")
         print("\t5.- List availabe site")
         print("\t6.- Enable/Disable sites")
-        print("\t7.- Create Sites")
+        print("\t7.- Create site (Virtual host)")
         print("\t8.- List enable sites")
         print("\t9.- Delete site")
         print("\t10.- Exit menu")            

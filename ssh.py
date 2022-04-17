@@ -1,7 +1,4 @@
-"""
-MENU SSH
-
-"""
+#!/usr/bin/env python
 
 #importem tots els moduls necessaris
 import os
