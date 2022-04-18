@@ -19,22 +19,22 @@ def pymin_menu():
         print ("\t5.- Exit")
         
         # Menu options condition
-        opcionMenu = input("\nSelect any option: ")
+        optionMenu = input("\nSelect any option: ")
     
-        if opcionMenu == "1":
+        if optionMenu == "1":
             menu_manageusers()
             
-        elif opcionMenu == "2":
+        elif optionMenu == "2":
             menu_apache()
             
-        elif opcionMenu == "3":
+        elif optionMenu == "3":
             menu_ssh()
             
-        elif opcionMenu == "4":
+        elif optionMenu == "4":
             menu_dhcp()
            
         #Exit with this while loop using break 
-        elif opcionMenu == "5":
+        elif optionMenu == "5":
             print("\nBye :)")
             break
 

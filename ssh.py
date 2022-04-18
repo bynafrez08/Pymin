@@ -1,91 +1,78 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
-#importem tots els moduls necessaris
 import os
-import time
+import time, subprocess
+from termcolor import colored 
 
-#VEURE SI SSH ESTA INSTAL·LAT
-
-#Utlitzem la seguent comandna per comprovar si dhcp esta instal·lat
-def veure_ssh():
-    
+#check if it's install it the ssh service
+def installation_status():
     os.system("apt list | grep openssh-server")
 
-        
+#install ssh if you don't have install it 
+def install_ssh():
+    os.system("sudo apt -y install openssh-server")
 
-#ESTAT DEL SERVEI
-
-def estat_serveri_ssh():
-    os.system("sudo service ssh status")
-
-#CANVI D'ESTAT
-
-def canviar_estat_ssh():
-
-    estat = input("\nEngegar / Apagar / Reiniciar :")
+#check ssh service status
+def service_status():
+    stat = subprocess.call(["systemctl", "is-active", "--quiet", "ssh"])
+    if(stat == 0):# if 0 (active), print "Active"
+        print("ssh -> is running")
+    else:
+        print("ssh -> is NOT running")
+        statuscommand = input("Dou you want to check more datail why it not running?[y/n]: ")
+        if(statuscommand == "y"):
+            print(colored("Press Q to exit", 'red'))
+            os.system("service ssh status")
     
-    if estat == "Engegar":
+#stop, restart, status, start openssh server
+def change_service_status():
+
+    estat = input("\nstart / stop / restart :")
+    
+    if estat == "start":
         
-        print("Engegant el servei...\n")
+        print("Starting the dhcp service...\n")
     
         os.system("sudo service ssh start")
         
         time.sleep(2)
 
-        print("Servei ssh engegat\n")
+        print("ssh service start successfully\n")
                 
-    elif estat == "Apagar":
+    elif estat == "stop":
                         
-        print("Aturant el servidor...\n")
+        print("Stopping the service...\n")
 
         os.system("sudo service ssh stop")
     
         time.sleep(2)
 
-        print("Servidor ssh aturat\n")
+        print("ssh service successfully stopped\n")
 
-    elif estat == "Reiniciar":
+    elif estat == "restart":
         
-        print("Reinicant el servei..\n")
+        print("Restarting the service..\n")
 
         os.system("sudo service ssh restart")
     
         time.sleep(2)
 
-        print("Servei ssh engegat\n")
+        print("ssh service restarted successfully\n")
     
     else:
         print ("")
-        input("No has sleccionat ninguna opció correcta...\nprem qualsevol tecla per continuar")
+        input("Please select the correct option...\npress any key to continue")
 
-#INSTAL·LAR DHCP
-
-#utlitzem os.system per executar una comanda al terminal de linux.
-def install_ssh():
-    os.system("sudo apt -y install ssh ")
-
-#ULTIMA DATA DE GENERACIÓ DE CLAUS DEL SERVIDOR SSH.
-
-#Definim una funció per a cada programa, de tal manera que
-#posteriorment els utilitzarem en un menu
-def data_generacio_claus():
-
-    #importem els moduls necessaris
-    import os
-
-    #Executem la comanda stat que ens mostra, entre d'altres, l'útima data de modificació
-    print("\nClau Privada: \n")
+#Date that the ssh private key and public key was created, modifiend, etc.
+def date_generate_keys():
+    print("\nPrivate key generation date: \n")
     os.system("stat /etc/ssh/ssh_host_rsa_key")
-
-    time.sleep(5)
-
-    print("\nClau Pública: \n")
+    time.sleep(2)
+    print("\nPublic key generation date: \n")
     os.system("stat /etc/ssh/ssh_host_rsa_key.pub")
 
-    time.sleep(2)
 
-#MOSTRAR MISSATGE DE BENVINGUDA SSH.
-
+#Show the actual welcome message ssh connetion.
 
 def missatge_benvinguda():
     
@@ -110,8 +97,8 @@ def port_defecte():
     #en pantalla posterioment.
     f=open("/etc/ssh/sshd_config", "r")
     lines=f.readlines()
-    print("\nPort per defecte: \n")
-    print (lines[14])
+    print("\nDefault: \n")
+    print (lines[14,15])
 
 #QUANTITAT D'INTENTS ERRONIS PERMESOS SSH.
 
@@ -235,86 +222,71 @@ def accedir_sense_contrasenya():
 
 #MENU
 
-def menu_ssh():
-    
-    #afegim un bluce while per a que sempre es repeteixi el menu 
+def menu_ssh(): 
     while True:
-    
-        #simplement esperem 2 segons per donar temps a llegir els resultats
-        time.sleep(5)
-
-        #executem la comanda clear per a fer mes agradable l'execució del menu
+        time.sleep(2)
         os.system("clear")
-    
-        #Fem una serie de prints per a que el usuari pugui veurels 
-        #i seleccionar una de les opcions
         print ("Manage SSH\n")
-        print ("\t1.- Mostrar Última data de generació de claus del servidor ssh")
-        print ("\t2.- Comprovar si SSH esta instal·lat ")
-        print ("\t3.- Estat del servei SSH ")
-        print ("\t4.- Engegar/Apagar/Reinicar SSH ")
+        print ("\t1.- SSH installation status")
+        print ("\t2.- Install SSH ")
+        print ("\t3.- SSH Service status ")
+        print ("\t4.- Start/Stop/Restart SSH ")
         print ("\t5.- Instal·lar SSH ")
-        print ("\t6.- Mostrar missatge benvinguda servidor ssh ")
-        print ("\t7.- Mostrar port per defecte ssh ")
-        print ("\t8.- Mostrar quanitat d'intents erronis permesos ")
-        print ("\t9.- Regenerar les claus del servidor ssh ")
-        print ("\t10.- Canviar missatge de benvinguda ssh ")
-        print ("\t11.- Canviar port per defecte ssh")
-        print ("\t12.- Canviar la quanitat d'intents erronis permesos ssh")
-        print ("\t13.- Permetre que un ususari pugui accedir al servidor ssh sense contrasenya")
-        print ("\t14.- Sortir")
+        print ("\t6.- Show ssh welcome message ")
+        print ("\t7.- Show default ssh port ")
+        print ("\t8.- Show number of failed attempts allowed on ssh connection ")
+        print ("\t9.- Regenerate the ssh keys to the server ")
+        print ("\t10.- Change ssh welcome message ")
+        print ("\t11.- Change default ssh port ")
+        print ("\t12.- Change the number of failed attempts allowed on ssh connection ")
+        print ("\t13.- Access to the servidor with a specefic user without password ")
+        print ("\t14.- Exit")
     
-        # sol·licitem una opcio al usuari
-        opcionMenu = input("\nSelecciona una opció: ")
-        
-        #ara creem els valors per tal de que si escolleix una
-        #de les opcions el porti al programa adient
-        if opcionMenu == "1":
-            data_generacio_claus()
-            
-        elif opcionMenu == "2":
-            veure_ssh()
+        optionMenu = input("\nSelect any option: ")
+    
+        if optionMenu == "1":
+            installation_status()
 
-        elif opcionMenu == "3":
-            estat_serveri_ssh()
+        elif optionMenu == "2":
+            install_ssh()
 
-        elif opcionMenu == "4":
-            canviar_estat_ssh()
+        elif optionMenu == "3":
+            service_status()
 
-        elif opcionMenu == "5":
+        elif optionMenu == "4":
+            change_service_status()
+
+        elif optionMenu == "5":
             install_ssh()
         
-        elif opcionMenu == "6":
+        elif optionMenu == "6":
             missatge_benvinguda()
             
-        elif opcionMenu == "7":
+        elif optionMenu == "7":
             port_defecte()
             
-        elif opcionMenu == "8":
+        elif optionMenu == "8":
             intents_erronis()
            
-        elif opcionMenu == "9":
+        elif optionMenu == "9":
             regenerar_claus()
             
-        elif opcionMenu == "10":
+        elif optionMenu == "10":
             canviar_missatge()
 
-        elif opcionMenu == "11":
+        elif optionMenu == "11":
             canviar_port()
            
-        elif opcionMenu == "12":
+        elif optionMenu == "12":
             canviar_intents()
             
-        elif opcionMenu == "13":
+        elif optionMenu == "13":
             accedir_sense_contrasenya()
         
-        #en la ultima opció afegim un break per poder sortir del bucle
-        #i tornar al menu principal   
-        elif opcionMenu == "14":
-            print("\nADEU :)")
+        elif optionMenu == "14":
+            print("\nBye :)")
             break
-
-        #Finalment fem servir else per si escolleixen una opció inexistent.
+        
         else:
             print ("")
-            input("No has pulsado ninguna opción correcta...\npulsa una tecla para continuar")
+            input("Please select the correct option......\npress any key to continue")
