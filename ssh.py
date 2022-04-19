@@ -2,7 +2,9 @@
 
 import os
 import time, subprocess
-from termcolor import colored 
+from tkinter import W
+from termcolor import colored
+from yaml import compose_all 
 
 #check if it's install it the ssh service
 def installation_status():
@@ -74,121 +76,82 @@ def date_generate_keys():
 
 #Show the actual welcome message ssh connetion.
 
-def missatge_benvinguda():
-    
-    #Avisem al usuari
-    print("\nSi no s'ha creat anterioment un missatge de benvinguda per defecte no mostrarà cap\n")
-    print("Per crear un missatge de benvinguda selecciona la opció numero 6\n")
-    
+def print_ssh_welcomemsg():
+    print("\nIf you don't have any message set it will don't print anything.\n") 
+    time.sleep(3)
+    print("Actual ssh welcome message: \n") 
+    os.system("cat /etc/motd 2> /dev/null")
+
+#change or set ssh welcome message
+
+def change_ssh_welcomemsg():
+    os.system("touch /etc/motd") # create motd file in the case that your system dont have this file created.
+    time.sleep(2)
+    with open('/etc/motd','w') as f:
+        f.write(input("Write the new welcome message: "))
+    print("\nThe Actual message: \n")
+    os.system("cat /etc/motd")
+    print("Mofiying config files...")
+    '''with open("/etc/ssh/sshd.conf","r") as f:
+        text = f.read().replace("#PrintLastLog yes", "PrintLastLog no")
+    with open("/etc/ssh/sshd.conf", "w") as w:
+        w.write()'''
+
+#Show the dafault ssh port.
+def default_port():
+    os.system("cat /etc/ssh/sshd_config | grep 'Port' | grep -vE 'GatewayPorts no' | sed 's/[#]//g'")
+    #os.system("cat /etc/services | grep 'ssh' | sed -e 's/\<SSH Remote Login Protocol\>//g' | sed 's/[#]//g'") -> i recommend to use this command
+
+#Failed attempts to enter the password 
+def print_failed_attempts():
+    os.system("cat /etc/ssh/sshd_config | grep 'MaxAuthTries' | sed 's/[#]//g'")
+
+#The known_hosts file lets the client authenticate the server, to check that it isn't connecting to an impersonator. This is for avoid man-in-the-middle attacks. 
+#The authorized_keys file lets the server authenticate the user.
+
+#regenerate keys for the server
+def regenerate_keys():
+    print("\nRegenerating keys for the server... \n")
+    os.system("/bin/rm -v /etc/ssh/ssh_host_*")
+    time.sleep(2)
+    os.system("sudo dpkg-reconfigure openssh-server 1>/dev/null")
+    time.sleep(2)
+    print("restarting the service...")
+    os.system("sudo service ssh restart")
+    print("Remember that if you want to connect to the server on your client machine you need to update the file .ssh/know_hosts")
     time.sleep(3)
 
-    print("Missatge de benvinguda actual: \n")
+'''#update the file know_hots
+def update_kown_hots():
+    hostname = input("Put the hostname or the IP address: ")
+    print("removing the old key from known_hosts...")
+    os.system("ssh-keygen -R $"+hostname+"")
+    print()'''
 
-    #Mostrem en pantalla el missatge actual amb la comanda cat
-    os.system("cat /etc/motd")
+#Change the default ssh port.
 
-
-#MOSTRAR PORT PER DEFECTE SSH.
-
-def port_defecte():
-
-    #Obrim el arxiu sshd_config en mode lectura "r" per guardar
-    #la informació d'una linea concreta (14) i mostrar-la
-    #en pantalla posterioment.
-    f=open("/etc/ssh/sshd_config", "r")
-    lines=f.readlines()
-    print("\nDefault: \n")
-    print (lines[14,15])
-
-#QUANTITAT D'INTENTS ERRONIS PERMESOS SSH.
-
-def intents_erronis():
-
-    #Obrim el arxiu sshd_config en mode lectura "r" per guardar
-    #la informació d'una linea concreta (35) i mostrar-la
-    #en pantalla posterioment.
-    f=open("/etc/ssh/sshd_config", "r")
-    lines=f.readlines()
-    print("\nNúmero d'intents erronis permesos: \n")
-    print (lines[35])
-
-
-#REGENERAR CLAUS DEL SERVIDOR SSH.
-
-def regenerar_claus():
-
-    #utlitzem comandes del terminal per a esborrar tots els arxius que contingun ssh_host_* 
-    #posteriorment utlitzem ssh-keygen per regenerar les claus del servidor.
-    #En quan acabi el procés reinicim el servei ssh i recordem al usuari que acutalizi el arxiu 
-    #"hosts" del seu pc (~/.ssh/known_hosts)
-    
-    print("\nRegenerant les claus del servidor... \n")
-    
-    os.system("/bin/rm -v /etc/ssh/ssh_host_*")
-    os.system("sudo dpkg-reconfigure openssh-server")
-    os.system("sudo service ssh restart")
-    
-    print ("\ns'ha completat la regeneració de claus amb éxit, Recorda actualizar l'arxiu ~/.ssh/known_hosts, sino als ordiandors dels ususaris els hi sortirà un missatge d'error al connectar-se!\n")
-
-
-#CANVIAR MISSATGE DE BENVINGUDA SSH.
-
-def canviar_missatge():
-
-    #Obrim el fitxer /etc/motd en mode "escritura" ("w")
-    #Utlitzem un input per a que el usuari escrigui el que vulgui.
-    f = open("/etc/motd", "w")
-    f.write(input("\nEscriu el nou missatge de benvinguda al teu servidor ssh: \n"))
-    f.close()
-
-    #Finalment fem servir la comanda cat per veure el resultat del fitxer modificat
-    print("\nMissatge de benvinguda actual: \n")
-    os.system("cat /etc/motd")
-    print("\n")
-
-
-#CANVIAR PORT PER DEFECTE SSH.
-
-def canviar_port():
-
-    #Obrim el arxiu sshd_config en mode lecutra "r" per guardar la infomració
-    #del contingut del mateix (readlines).
+'''def canviar_port():
     with open('/etc/ssh/sshd_config', 'r') as f:
         data = f.readlines()
-
-    #Creem una variable amb input per a que el usuari pugui introduïr el port
-    #Tambe especifiquem com ho ha d'escriure per evitar confusions.
     nou_port = input("Escull un port (Has d'escriure el següent: \nPort: 20 (o el numero que vulguis): ")
-    
-    #Finalment sobreescirbim en un linea concreta del fitxer (14)
-    #el numero de port que ha escrit el usuari.
     data[14] = nou_port + "\n"
     with open('/etc/ssh/sshd_config', 'w') as f:
         f.writelines(data)
-        f.close()
+        f.close()'''
         
-      
+#Change the number of failed attempts allowed on ssh connection
 
-#CANVIAR LA QUANITAT D'INTENTS ERRONIS PERMESOS SSH.
-
-def canviar_intents():
-
-    #Obrim el arxiu sshd_config en mode lecutra "r" per guardar la infomració
-    #del contingut del mateix (readlines).
-    with open('/etc/ssh/sshd_config', 'r') as f:
-        data = f.readlines()
-
-    #Creem una variable amb input per a que el usuari pugui introduïr el múmero d'intents
-    #Tambe especifiquem com ho ha d'escriure per evitar confusions.
-    intents = input("Escull el numero d'intents (Has d'escriure el següent: \nMaxAuthTries: 20 (o el numero que vulguis): ")
-
-    #Finalment sobreescirbim en un linea concreta del fitxer (35)
-    #el numero de port que ha escrit el usuari.
-    data[35] = intents + "\n"
-    with open('/etc/ssh/sshd_config', 'w') as f:
-        f.writelines(data)
-        f.close()
-
+def change_password_attempts():
+    print("Your actual failed attempts:\n")
+    command = os.system("cat /etc/ssh/sshd_config | grep 'MaxAuthTries' | sed 's/[#]//g'")
+    userattempts = input("\nSet a num value to set failed attempts to login: ")
+    #un-comment the line that contain "MaxAuthTries"
+    time.sleep(2)
+    os.system("sed -i '/MaxAuthTries/s/^#//g' /etc/ssh/sshd_config")
+    with open("/etc/ssh/sshd.conf", "r") as f:
+        text = f.read().replace(command, "{0}".format(userattempts)) 
+    with open("/etc/ssh/sshd.conf", "w") as w:    
+        w.write(text)
 
 #PERMETRE QUE UN USUSARI ACCEDEIXI AL SERVIDOR SSH SENSE CONTRASENYA.
 
@@ -231,15 +194,15 @@ def menu_ssh():
         print ("\t2.- Install SSH ")
         print ("\t3.- SSH Service status ")
         print ("\t4.- Start/Stop/Restart SSH ")
-        print ("\t5.- Instal·lar SSH ")
-        print ("\t6.- Show ssh welcome message ")
-        print ("\t7.- Show default ssh port ")
-        print ("\t8.- Show number of failed attempts allowed on ssh connection ")
-        print ("\t9.- Regenerate the ssh keys to the server ")
-        print ("\t10.- Change ssh welcome message ")
+        print ("\t5.- Date generation keys ")
+        print ("\t6.- Show the actual ssh welcome message ")
+        print ("\t7.- Change the ssh welcome message ")
+        print ("\t8.- Show ssh default port ")
+        print ("\t9.- Show Failed attempts to login with ssh ")
+        print ("\t10.- - ")
         print ("\t11.- Change default ssh port ")
         print ("\t12.- Change the number of failed attempts allowed on ssh connection ")
-        print ("\t13.- Access to the servidor with a specefic user without password ")
+        print ("\t13.- Access to the server without password ")
         print ("\t14.- Exit")
     
         optionMenu = input("\nSelect any option: ")
@@ -257,28 +220,28 @@ def menu_ssh():
             change_service_status()
 
         elif optionMenu == "5":
-            install_ssh()
+            date_generate_keys()
         
         elif optionMenu == "6":
-            missatge_benvinguda()
+            print_ssh_welcomemsg()
             
         elif optionMenu == "7":
-            port_defecte()
+            change_ssh_welcomemsg()
             
         elif optionMenu == "8":
-            intents_erronis()
+            default_port()
            
         elif optionMenu == "9":
-            regenerar_claus()
+            print_failed_attempts()
             
-        elif optionMenu == "10":
-            canviar_missatge()
+        #elif optionMenu == "10":
+            #canviar_missatge()
 
         elif optionMenu == "11":
             canviar_port()
            
         elif optionMenu == "12":
-            canviar_intents()
+            change_password_attempts()
             
         elif optionMenu == "13":
             accedir_sense_contrasenya()
