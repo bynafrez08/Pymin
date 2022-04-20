@@ -1,26 +1,8 @@
-# Administración de linux en python
-
-##### Solo funciona en sistemas linux
-
-Esto es un programa en linea de comando para que puedas administrar los siguientes servicios en linux con facilidad y evitar escribir comandos complejos.
-
-Puedes administrar servicios de linux como:
-- Administrar usuarios (crear, listar, eliminar)
-- Apache2
-- isc-dhcp-server
-- SSH
-
-### para ejecutar el programa tenemos que utilizar los siguientes comando:
-
-1. git clone https://github.com/nafsuuddini08/Admin_linux_python/
-2. cd Admin_linux_python
-3. sudo python3 pymin.py
-
-# Linux administration in python
+# Pymin - Make Easy
 
 ##### Only works on linux systems
 
-This is a command line program so that you can manage the following services in linux with ease and avoid typing complex commands.
+Pymin is a command line program so that you can manage easily the following services on linux env, ideal for system administrators or if you want to set up a lab without having to configure everything manually.
 
 You can manage linux services like:
 - Manage users (create, list, delete)
@@ -30,7 +12,6 @@ You can manage linux services like:
 
 ### to run the programs we have to use the following command:
 
-1. git clone https://github.com/nafsuuddini08/Admin_linux_python/
-2. cd Admin_linux_python
+1. git clone https://github.com/nafsuuddini08/Pymin.git
+2. cd Pymin
 3. sudo python3 pymin.py
-

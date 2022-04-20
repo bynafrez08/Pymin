@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from curses import unget_wch
 import os
 import time, subprocess
 from tkinter import W
@@ -65,6 +66,13 @@ def change_service_status():
         print ("")
         input("Please select the correct option...\npress any key to continue")
 
+# access to the particular server or host with ssh connection.
+def access_host_server():
+    username = input("Put the username that you want to access to: ")
+    ip = input("Put the Ip address to the destination server or host: ")
+    time.sleep(2)
+    os.system("ssh " +username+ "@" +ip+"")
+
 #Date that the ssh private key and public key was created, modifiend, etc.
 def date_generate_keys():
     print("\nPrivate key generation date: \n")
@@ -73,9 +81,7 @@ def date_generate_keys():
     print("\nPublic key generation date: \n")
     os.system("stat /etc/ssh/ssh_host_rsa_key.pub")
 
-
 #Show the actual welcome message ssh connetion.
-
 def print_ssh_welcomemsg():
     print("\nIf you don't have any message set it will don't print anything.\n") 
     time.sleep(3)
@@ -83,19 +89,16 @@ def print_ssh_welcomemsg():
     os.system("cat /etc/motd 2> /dev/null")
 
 #change or set ssh welcome message
-
 def change_ssh_welcomemsg():
-    os.system("touch /etc/motd") # create motd file in the case that your system dont have this file created.
     time.sleep(2)
+    os.system("touch /etc/motd")
     with open('/etc/motd','w') as f:
         f.write(input("Write the new welcome message: "))
-    print("\nThe Actual message: \n")
+    print("\nThe Actual message: \n")   
     os.system("cat /etc/motd")
-    print("Mofiying config files...")
-    '''with open("/etc/ssh/sshd.conf","r") as f:
-        text = f.read().replace("#PrintLastLog yes", "PrintLastLog no")
-    with open("/etc/ssh/sshd.conf", "w") as w:
-        w.write()'''
+    time.sleep(2)
+    print("\nMofiying config files...")
+    os.system("sed -i -e 's/#PrintLastLog yes/PrintLastLog no/' /etc/ssh/sshd_config")
 
 #Show the dafault ssh port.
 def default_port():
@@ -108,13 +111,12 @@ def print_failed_attempts():
 
 #The known_hosts file lets the client authenticate the server, to check that it isn't connecting to an impersonator. This is for avoid man-in-the-middle attacks. 
 #The authorized_keys file lets the server authenticate the user.
-
 #regenerate keys for the server
 def regenerate_keys():
     print("\nRegenerating keys for the server... \n")
     os.system("/bin/rm -v /etc/ssh/ssh_host_*")
     time.sleep(2)
-    os.system("sudo dpkg-reconfigure openssh-server 1>/dev/null")
+    os.system("sudo dpkg-reconfigure openssh-server")
     time.sleep(2)
     print("restarting the service...")
     os.system("sudo service ssh restart")
@@ -129,59 +131,51 @@ def update_kown_hots():
     print()'''
 
 #Change the default ssh port.
-
-'''def canviar_port():
-    with open('/etc/ssh/sshd_config', 'r') as f:
-        data = f.readlines()
-    nou_port = input("Escull un port (Has d'escriure el següent: \nPort: 20 (o el numero que vulguis): ")
-    data[14] = nou_port + "\n"
-    with open('/etc/ssh/sshd_config', 'w') as f:
-        f.writelines(data)
-        f.close()'''
-        
-#Change the number of failed attempts allowed on ssh connection
+def change_port():
+    print("Checking if there is a comment in the config file...")
+    os.system("sed -i '/Port/s/^#//g' /etc/ssh/sshd.conf") # this line don't work
+    time.sleep(2)
+    userportinput = input("Put the actual ssh port number [example: Port 20]: ")
+    new_port = input("Set new ssh port [example: Port 20]: ")
+    with open("/etc/ssh/sshd.conf", "r") as f:
+        text = f.read().replace(userportinput, "{0}".format(new_port)) 
+    with open("/etc/ssh/sshd.conf", "w") as w:    
+        w.write(text)
 
 def change_password_attempts():
     print("Your actual failed attempts:\n")
-    command = os.system("cat /etc/ssh/sshd_config | grep 'MaxAuthTries' | sed 's/[#]//g'")
-    userattempts = input("\nSet a num value to set failed attempts to login: ")
+    command = subprocess.Popen(["cat /etc/ssh/sshd_config | grep 'MaxAuthTries' | sed 's/[#]//g'"])
     #un-comment the line that contain "MaxAuthTries"
     time.sleep(2)
     os.system("sed -i '/MaxAuthTries/s/^#//g' /etc/ssh/sshd_config")
-    with open("/etc/ssh/sshd.conf", "r") as f:
+    userattempts = input("\nSet a num value to set failed attempts to login: ")
+    with open("/etc/ssh/sshd.conf", "r" ) as f:
         text = f.read().replace(command, "{0}".format(userattempts)) 
     with open("/etc/ssh/sshd.conf", "w") as w:    
         w.write(text)
 
-#PERMETRE QUE UN USUSARI ACCEDEIXI AL SERVIDOR SSH SENSE CONTRASENYA.
+#Access with a user without any password in a particular host or server.
+def access_without_password():
+    print("To access to a particular host or server it will need the public key.\n")
+    print("If you dont have any key generated it will create you automatically.\n")
+    option = input("If you have already craeted the keys just type 'n' and if it's not just hit ENTER: ")
 
-def accedir_sense_contrasenya():
-
-    print("Per accedir al servidor es necessita una clau publica\n")
-    print("Sino la tens aquest programa la genera auotmàticament\n")
-    print("Si ja tens una clau publica simplement selecciona la opció n per no sobresciure la clau\n")
-
-    #Generem un parell de claus noves
-    os.system("ssh-keygen -t rsa")
+    username = input("\nPut the username that you want to access without password: ")   
+    ip = input("\nDestination IP address[server/host]: ")
     
-    #Amb els seguents inputs guardem la informació del ususari
-    #i la utlitzem posteriorment per accedir al servidor ssh
-    usuari = input("\nNom d'usuari al qual es vol accedir sense contrasenya: ")
-    
-    lloc = input("\nIp o host del servidor ssh: ")
+    if option == "n":
+        execute = username
+        execute2 = ip
+    else:
+        print("Generating the private and public key...")
+        time.sleep(2)
+        os.system("ssh-keygen -t rsa")
+        time.sleep(2)
+        ex_input = username
+        ex_input2 = ip
 
-    print("\n")
-
-    print("Creant directori...\n")
-    #Creem un directori .ssh al directori del usuari
-    os.system("ssh " + usuari + "@" + lloc + " mkdir -p .ssh")
-
-    print("Copiant clau publica al servidor...\n")
-    #Finalment copiem el contingut de la clau pública del pc client al fitxer
-    #.ssh/authorized_keys del usuari del servidor.
-    os.system("cat .ssh/id_rsa.pub | ssh " + usuari + "@" + lloc + " 'cat >> .ssh/authorized_keys'")
-
-    print("Fet, ja pots accedir sense contrasenya al usuari " + usuari + " del servidor ssh\n")
+    #send the public key to the server with ssh-copy-id
+    os.system("ssh-copy-id -i ~/.ssh/id_rsa.pub " +username+ "@" +ip+ "")
 
 #MENU
 
@@ -238,13 +232,16 @@ def menu_ssh():
             #canviar_missatge()
 
         elif optionMenu == "11":
-            canviar_port()
+            change_port()
            
         elif optionMenu == "12":
             change_password_attempts()
             
         elif optionMenu == "13":
-            accedir_sense_contrasenya()
+            access_without_password()
+        
+        elif optionMenu == "15":
+            access_host_server()
         
         elif optionMenu == "14":
             print("\nBye :)")

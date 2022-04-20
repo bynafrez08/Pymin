@@ -31,13 +31,11 @@ def apache_status():
 def list_sites():
     print("These are the available sites: \n")
     os.system("ls /etc/apache2/sites-available")
-    #listarr = os.listdir("/etc/apache2/sites-available")
-    #print (listarr.replace('[', ''))
-
+    
 #list enbled sites
 def list_enable():
     print("These are the enabled sites: \n")
-    listena = os.listdir("/etc/apache2/sites-enabled")
+    listena = os.system("ls /etc/apache2/sites-enabled")
     print (listena)
 
 #start/stop/restart apache
@@ -197,7 +195,7 @@ def menu_apache():
         print("\t6.- Enable/Disable sites")
         print("\t7.- Create site (Virtual host)")
         print("\t8.- List enable sites")
-        print("\t9.- Delete site")
+        print("\t9.- Delete site (Virtual host)")
         print("\t10.- Exit menu")            
         
         #condition for the menu options.
