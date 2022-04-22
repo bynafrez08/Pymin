@@ -1,11 +1,8 @@
 #!/usr/bin/python
 
-from curses import unget_wch
 import os
 import time, subprocess
-from tkinter import W
 from termcolor import colored
-from yaml import compose_all 
 
 #check if it's install it the ssh service
 def installation_status():
@@ -75,12 +72,13 @@ def access_host_server():
 
 #Date that the ssh private key and public key was created, modifiend, etc.
 def date_generate_keys():
-    print("\nPrivate key generation date: \n")
-    os.system("stat /etc/ssh/ssh_host_rsa_key")
+    print("\nPrivate key date: \n")
+    os.system("stat /etc/ssh/ssh_host_rsa_key | awk 'NR==5 || NR==6 || NR==7 || NR==8' | awk '{print $1,$2,$3}' | awk -F'.' '{print $1}'")
     time.sleep(2)
-    print("\nPublic key generation date: \n")
-    os.system("stat /etc/ssh/ssh_host_rsa_key.pub")
+    print("\nPublic key date: \n")
+    os.system("stat /etc/ssh/ssh_host_rsa_key.pub | awk 'NR==5 || NR==6 || NR==7 || NR==8' | awk '{print $1,$2,$3}' | awk -F'.' '{print $1}'")
 
+#https://www.tecmint.com/debugfs-command-show-file-creation-time-in-linux/
 #Show the actual welcome message ssh connetion.
 def print_ssh_welcomemsg():
     print("\nIf you don't have any message set it will don't print anything.\n") 
@@ -123,34 +121,35 @@ def regenerate_keys():
     print("Remember that if you want to connect to the server on your client machine you need to update the file .ssh/know_hosts")
     time.sleep(3)
 
-'''#update the file know_hots
-def update_kown_hots():
+#update the file know_hots
+def update_known_hosts():
+    print("remember if you login with a root user it will update the ssh known_host for that user or if you login with normal user it will update your normal user known_host key.")
     hostname = input("Put the hostname or the IP address: ")
     print("removing the old key from known_hosts...")
-    os.system("ssh-keygen -R $"+hostname+"")
-    print()'''
+    os.system("ssh-keygen -R "+hostname+"")
+    time.sleep(2)
+    print("Generating the new key...")
+    os.system("ssh-keyscan -H "+hostname+" >> ~/.ssh/known_hosts")
 
 #Change the default ssh port.
 def change_port():
     print("Checking if there is a comment in the config file...")
-    os.system("sed -i '/Port/s/^#//g' /etc/ssh/sshd.conf") # this line don't work
+    os.system("sed -i '/Port/s/^#//g' /etc/ssh/sshd_config")
     time.sleep(2)
-    userportinput = input("Put the actual ssh port number [example: Port 20]: ")
+    userportinput = input("Put the actual ssh port number [example: Port 22]: ")
     new_port = input("Set new ssh port [example: Port 20]: ")
     with open("/etc/ssh/sshd.conf", "r") as f:
-        text = f.read().replace(userportinput, "{0}".format(new_port)) 
+        text = f.read().replace("{0}".format(userportinput), "{0}".format(new_port)) 
     with open("/etc/ssh/sshd.conf", "w") as w:    
         w.write(text)
 
 def change_password_attempts():
-    print("Your actual failed attempts:\n")
-    command = subprocess.Popen(["cat /etc/ssh/sshd_config | grep 'MaxAuthTries' | sed 's/[#]//g'"])
-    #un-comment the line that contain "MaxAuthTries"
     time.sleep(2)
-    os.system("sed -i '/MaxAuthTries/s/^#//g' /etc/ssh/sshd_config")
-    userattempts = input("\nSet a num value to set failed attempts to login: ")
+    os.system("sed -i '/MaxAuthTries/s/^#//g' /etc/ssh/sshd_config") #un-comment the line that contain "MaxAuthTries"  
+    usermaxauth = input("Put your actual MaxAuthTries [example: MaxAuthTries 6]: ")  
+    userattempts = input("\nNew MaxAuthTries [example: MaxAuthTries 8]: ")
     with open("/etc/ssh/sshd.conf", "r" ) as f:
-        text = f.read().replace(command, "{0}".format(userattempts)) 
+        text = f.read().replace("{0}".format(usermaxauth),"{0}".format(userattempts)) 
     with open("/etc/ssh/sshd.conf", "w") as w:    
         w.write(text)
 
@@ -188,17 +187,18 @@ def menu_ssh():
         print ("\t2.- Install SSH ")
         print ("\t3.- SSH Service status ")
         print ("\t4.- Start/Stop/Restart SSH ")
-        print ("\t5.- Date generation keys ")
-        print ("\t6.- Show the actual ssh welcome message ")
-        print ("\t7.- Change the ssh welcome message ")
-        print ("\t8.- Show ssh default port ")
-        print ("\t9.- Show Failed attempts to login with ssh ")
-        print ("\t10.- - ")
-        print ("\t11.- Change default ssh port ")
-        print ("\t12.- Change the number of failed attempts allowed on ssh connection ")
-        print ("\t13.- Access to the server without password ")
-        print ("\t14.- Exit")
-    
+        print ("\t5.- Connect via ssh with a particular host ")
+        print ("\t6.- SSH keys modification/creation date ")
+        print ("\t7.- Show ssh welcome message ")
+        print ("\t8.- Change ssh welcome message ")
+        print ("\t9.- Show ssh dafault port ")
+        print ("\t10.-Show the failed attempts in ssh login ")
+        print ("\t11.- Regenerate the ssh keys to the server ")
+        print ("\t12.- Update known_hosts key ")
+        print ("\t13.- Change failed attempts in ssh login ")
+        print ("\t14.- Access to a particular host without password ")
+        print ("\t15.- Exit ")
+
         optionMenu = input("\nSelect any option: ")
     
         if optionMenu == "1":
@@ -214,36 +214,36 @@ def menu_ssh():
             change_service_status()
 
         elif optionMenu == "5":
-            date_generate_keys()
+            access_host_server()
         
         elif optionMenu == "6":
-            print_ssh_welcomemsg()
+            date_generate_keys()
             
         elif optionMenu == "7":
-            change_ssh_welcomemsg()
+            print_ssh_welcomemsg()
             
         elif optionMenu == "8":
-            default_port()
+            change_ssh_welcomemsg()
            
         elif optionMenu == "9":
-            print_failed_attempts()
+            default_port()
             
-        #elif optionMenu == "10":
-            #canviar_missatge()
+        elif optionMenu == "10":
+            print_failed_attempts()
 
         elif optionMenu == "11":
-            change_port()
+            regenerate_keys()
            
         elif optionMenu == "12":
-            change_password_attempts()
+            update_known_hosts()
             
         elif optionMenu == "13":
+            change_password_attempts()
+        
+        elif optionMenu == "14":
             access_without_password()
         
         elif optionMenu == "15":
-            access_host_server()
-        
-        elif optionMenu == "14":
             print("\nBye :)")
             break
         
