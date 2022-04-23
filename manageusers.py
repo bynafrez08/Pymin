@@ -1,22 +1,13 @@
-
 #!/usr/bin/env python
 
 import os, time
 import sys
 import subprocess
-
+        
 #shows users home directories
 def show_home_directories():
     print("This is all the users home directories: \n")
     os.system("ls /home")#use os.listdir function to list the content in particular directory.
-
-#def list_all_users():
-
-
-#create a user.
-#def create_user(): # more simple way to create user using adduser. If you want you can remove the other function and use this one.
-#    username = input("Put the name of the user that you want to create: ")
-#    os.system("adduser "+username+"")
 
 def create_user():
     username = input("Put the name of the user that you want to create: ")
@@ -30,7 +21,6 @@ def create_user():
     os.system("usermod "+username+" -s /bin/bash")
     print("Done.")
         
-
 #delete user
 def user_del():
     deleteusername = input("Put the name of the user that you want to delete: ")
@@ -84,8 +74,6 @@ def change_user_password():
     username = input("Username that you want to change the password: ")
     os.system("passwd "+username+"")
 
-
-
 #menu
 def menu_manageusers():
     while True:
@@ -96,18 +84,16 @@ def menu_manageusers():
         #menu options
         print("Manage Users and Groups\n")
         print("\t1.- View Users Home directory")
-        print("\t2.- List all the users")
-        print("\t3.- List Groups")
-        print("\t4.- Create Users")
-        print("\t5.- Delete Users")
-        print("\t6.- Create Groups")
-        print("\t7.- Delete Groups")
-        print("\t8.- Add users in a group")
-        print("\t9.- Remove users in a group")
-        print("\t10.- Change Users shells")
-        print("\t11.- Change Users permissions")
-        print("\t12.- Change Users passwords")
-        print("\t13.- Exit menu")            
+        print("\t2.- Create Users")
+        print("\t3.- Delete Users")
+        print("\t4.- Create Groups")
+        print("\t5.- Delete Groups")
+        print("\t6.- Add users in a group")
+        print("\t7.- Remove users in a group")
+        print("\t8.- Change Users shells")
+        #print("\t9.- Change Users permissions")
+        print("\t9.- Change Users passwords")
+        print("\t10.- Exit menu")            
         
         #condition for the menu options.
         option = input("\nSelect Any option: ")
@@ -115,42 +101,34 @@ def menu_manageusers():
         if option == "1":
            show_home_directories() 
 
-        #elif option == "2":
-            #list_all_users()
-
-        #elif option == "3":
-            #list_groups()
-
-        elif option == "4":
+        elif option == "2":
             create_user()
 
-        elif option == "5":
+        elif option == "3":
             user_del()
 
-        elif option == "6":
+        elif option == "4":
             create_group()
+
+        elif option == "5":
+            delete_group()
+
+        elif option == "6":
+            add_user_in_group()
         
         elif option == "7":
-            delete_group()
-        
-        elif option == "8":
-            add_user_in_group()
-
-        elif option == "9":
             remove_user_group()
         
-        elif option == "10":
+        elif option == "8":
             change_user_shell()
 
-        #elif option == "11":
-            #change_user_permissions()
-
-        elif option == "12":
+        elif option == "9":
             change_user_password()
-
-        elif option == "13":
+          
+        elif option == "10":
             print("\nBye :)")
-            os.system('clear')
+            time.sleep(2)
+            os.system("clear")
             break
         
         else:

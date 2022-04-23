@@ -70,7 +70,7 @@ def install_dhcp():
 
 #Check available subnets and hosts
 def show_subenet_hosts(): 
-    file = open("/home/kali/dhcpd.conf", "r")
+    file = open("/etc/dhcp/dhcpd.conf", "r")
     print("\nIf you don't have any subnet or host created it don't output anything\n")
     print("\nActive subnets: \n")
     time.sleep(2)
@@ -83,7 +83,7 @@ def show_subenet_hosts():
 #set MAX_LEASE_TIME
 
 def change_max_lease_time(): 
-    output_actual_max =  subprocess.Popen("cat /home/kali/dhcpd.conf | awk '/max-lease-time/{print; exit}'", shell=True, stdout=subprocess.PIPE).stdout
+    output_actual_max =  subprocess.Popen("cat /etc/dhcp/dhcpd.conf | awk '/max-lease-time/{print; exit}'", shell=True, stdout=subprocess.PIPE).stdout
     # awk '/max-lease-time/{print; exit}' | sed -e 's/\<max-lease-time\>//g' | sed 's/[;]//g' -> In the case that you want to just output the seconds.
     output_lease =  output_actual_max.read()
     print("Here is your actual MAX_LEASE_TIME in your system:", output_lease.decode()) 
@@ -91,23 +91,23 @@ def change_max_lease_time():
     time.sleep(2)
     putoldmax = input("put your actual MAX-LEASE-TIME (copy and paste it): ")
     new_max = input("Set new max-lease-time (You must type the following): \ max-lease-time 600; (or the number that you want): ") 
-    with open("/home/kali/dhcpd.conf", "r") as r:
+    with open("/etc/dhcp/dhcpd.conf", "r") as r:
         text = r.read().replace("{0}".format(putoldmax), "{0}".format(new_max)) 
-    with open("/home/kali/dhcpd.conf", "w") as w:
+    with open("/etc/dhcp/dhcpd.conf", "w") as w:
         w.write(text)
     
 #DEFAULT_LEASE_TIME
 
 def change_default_lease_time():
-    output_actual_max =  subprocess.Popen("cat /home/kali/dhcpd.conf | awk '/default-lease-time/{print; exit}'", shell=True, stdout=subprocess.PIPE).stdout
+    output_actual_max =  subprocess.Popen("cat /etc/dhcp/dhcpd.conf | awk '/default-lease-time/{print; exit}'", shell=True, stdout=subprocess.PIPE).stdout
     output_lease =  output_actual_max.read()
     print("Here is your actual DEFAULT_LEASE_TIME in your system:", output_lease.decode())
     time.sleep(2)
     putoldmax = input("put your actual DEFAULT-LEASE-TIME (copy and paste it): ")
     new_max = input("Set new default-lease-time (You must type the following): \ default-lease-time 600; (or the number that you want): ") 
-    with open("/home/kali/dhcpd.conf", "r") as r:
+    with open("/etc/dhcp/dhcpd.conf", "r") as r:
         text = r.read().replace("{0}".format(putoldmax), "{0}".format(new_max)) 
-    with open("/home/kali/dhcpd.conf", "w") as w:
+    with open("/etc/dhcp/dhcpd.conf", "w") as w:
         w.write(text)
     
 #SUBNET
@@ -121,7 +121,7 @@ def create_subnet():
     option_domain_name_servers = input("\noption_domain_name_servers (Remember to separate with a comma followed by a space to add more than one server.): ")
     option_domain_name = input("\noption_domain_name (Remember to add ; on the last line on your domain name ""): ") 
     #create a subnet and add on the last line of the file.
-    with open('/home/kali/dhcpd.conf', 'a') as f:
+    with open('/etc/dhcp/dhcpd.conf', 'a') as f:
         f.write("\n" + "subnet " + subnet + " netmask " + netmask + " {" + "\n" + "    " + "range "
         + ranges + ";" + "\n" + "    " + "option routers " + option_routers + ";" + "\n" + "    " 
         + "option-domain-name-servers " + option_domain_name_servers + ";" + "\n" + "    " 
@@ -197,7 +197,9 @@ def menu_dhcp():
 
         #and break to exit on the loop    
         elif optionMenu == "10":
-            print("\nCHAO :)")
+            print("\nBye :)")
+            time.sleep(2)
+            os.system("clear")
             break
 
         else:

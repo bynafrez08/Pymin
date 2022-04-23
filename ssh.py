@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os
+import re
 import time, subprocess
 from termcolor import colored
 
@@ -81,7 +82,7 @@ def date_generate_keys():
 #https://www.tecmint.com/debugfs-command-show-file-creation-time-in-linux/
 #Show the actual welcome message ssh connetion.
 def print_ssh_welcomemsg():
-    print("\nIf you don't have any message set it will don't print anything.\n") 
+    print("\nIf you don't have any message set it will don't output anything.\n") 
     time.sleep(3)
     print("Actual ssh welcome message: \n") 
     os.system("cat /etc/motd 2> /dev/null")
@@ -136,28 +137,36 @@ def change_port():
     print("Checking if there is a comment in the config file...")
     os.system("sed -i '/Port/s/^#//g' /etc/ssh/sshd_config")
     time.sleep(2)
-    userportinput = input("Put the actual ssh port number [example: Port 22]: ")
+    outputport =  subprocess.Popen("cat /etc/ssh/sshd_config | grep 'Port' | grep -vE 'GatewayPorts no' | sed 's/[#]//g'", shell=True, stdout=subprocess.PIPE).stdout
+    portssh =  outputport.read()
+    print("Here is your actual ssh port:", portssh.decode())
+    time.sleep(2) 
+    userportinput = input("Type your actual ssh port [Copy and Paste it]: ")
     new_port = input("Set new ssh port [example: Port 20]: ")
-    with open("/etc/ssh/sshd.conf", "r") as f:
+    with open("/etc/ssh/sshd_config", "r") as f:
         text = f.read().replace("{0}".format(userportinput), "{0}".format(new_port)) 
-    with open("/etc/ssh/sshd.conf", "w") as w:    
+    with open("/etc/ssh/sshd_config", "w") as w:    
         w.write(text)
 
 def change_password_attempts():
+    print("Checking if there is any comment...")
+    os.system("sed -i '/MaxAuthTries/s/^#//g' /etc/ssh/sshd_config") #un-comment the line that contain "MaxAuthTries"
     time.sleep(2)
-    os.system("sed -i '/MaxAuthTries/s/^#//g' /etc/ssh/sshd_config") #un-comment the line that contain "MaxAuthTries"  
-    usermaxauth = input("Put your actual MaxAuthTries [example: MaxAuthTries 6]: ")  
+    outputmaxauth =  subprocess.Popen("cat /etc/ssh/sshd_config | grep 'MaxAuthTries' | sed 's/[#]//g'", shell=True, stdout=subprocess.PIPE).stdout
+    maxauth =  outputmaxauth.read()
+    print("Your actual MaxAuthTries: ", maxauth.decode())
+    usermaxauth = input("Type your actual MaxAuthTries [Copy and paste it]: ")  
     userattempts = input("\nNew MaxAuthTries [example: MaxAuthTries 8]: ")
-    with open("/etc/ssh/sshd.conf", "r" ) as f:
+    with open("/etc/ssh/sshd_config", "r" ) as f:
         text = f.read().replace("{0}".format(usermaxauth),"{0}".format(userattempts)) 
-    with open("/etc/ssh/sshd.conf", "w") as w:    
+    with open("/etc/ssh/sshd_config", "w") as w:    
         w.write(text)
 
 #Access with a user without any password in a particular host or server.
 def access_without_password():
     print("To access to a particular host or server it will need the public key.\n")
     print("If you dont have any key generated it will create you automatically.\n")
-    option = input("If you have already craeted the keys just type 'n' and if it's not just hit ENTER: ")
+    option = input("If you have already created the keys just type 'n' and if it's not just hit ENTER: ")
 
     username = input("\nPut the username that you want to access without password: ")   
     ip = input("\nDestination IP address[server/host]: ")
@@ -178,7 +187,7 @@ def access_without_password():
 
 #MENU
 
-def menu_ssh(): 
+def menu_ssh():
     while True:
         time.sleep(2)
         os.system("clear")
@@ -197,7 +206,8 @@ def menu_ssh():
         print ("\t12.- Update known_hosts key ")
         print ("\t13.- Change failed attempts in ssh login ")
         print ("\t14.- Access to a particular host without password ")
-        print ("\t15.- Exit ")
+        print ("\t15.- Change ssh default port ")
+        print ("\t16.- Exit ")
 
         optionMenu = input("\nSelect any option: ")
     
@@ -233,8 +243,8 @@ def menu_ssh():
 
         elif optionMenu == "11":
             regenerate_keys()
-           
         elif optionMenu == "12":
+           
             update_known_hosts()
             
         elif optionMenu == "13":
@@ -242,9 +252,14 @@ def menu_ssh():
         
         elif optionMenu == "14":
             access_without_password()
-        
+
         elif optionMenu == "15":
+            change_port()
+        
+        elif optionMenu == "16":
             print("\nBye :)")
+            time.sleep(2)
+            os.system("clear")
             break
         
         else:

@@ -30,12 +30,12 @@ def apache_status():
 #list sites available 
 def list_sites():
     print("These are the available sites: \n")
-    os.system("ls /etc/apache2/sites-available")
+    os.system("ls /etc/apache2/sites-available | awk -F'.conf' '{print $1}'")
     
 #list enbled sites
 def list_enable():
     print("These are the enabled sites: \n")
-    listena = os.system("ls /etc/apache2/sites-enabled")
+    listena = os.system("ls /etc/apache2/sites-enabled | awk -F'.conf' '{print $1}'")
     print (listena)
 
 #start/stop/restart apache
@@ -230,7 +230,8 @@ def menu_apache():
 
         elif option == "10":
             print("\nBye :)")
-            os.system('clear')
+            time.sleep(2)
+            os.system("clear")
             break
         
         else:
