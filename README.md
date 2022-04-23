@@ -10,7 +10,27 @@ You can manage linux services like:
 - isc-dhcp-server
 - SSH
 
-### to run the programs we have to use the following command:
+Pymin interface:
+
+![screen1](/images/screen1.png)
+
+Apache inteface:
+
+![screen1](/images/screen2.png)
+
+SSH interface:
+
+![screen1](/images/screen3.png)
+
+DHCP interface:
+
+![screen1](/images/screen4.png)
+
+Manage users and groups interface:
+
+![screen1](/images/screen5.png)
+
+## to run the programs we have to use the following command:
 
 1. git clone https://github.com/nafsuuddini08/Pymin.git
 2. cd Pymin

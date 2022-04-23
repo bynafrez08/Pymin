@@ -12,7 +12,16 @@ from dhcp import menu_dhcp
 
 def pymin_menu(): 
     while True:
-        os.system("figlet -w 100 Welcome to Pymin")
+        banner = """   
+        ██████╗ ██╗   ██╗███╗   ███╗██╗███╗   ██╗
+        ██╔══██╗╚██╗ ██╔╝████╗ ████║██║████╗  ██║
+        ██████╔╝ ╚████╔╝ ██╔████╔██║██║██╔██╗ ██║
+        ██╔═══╝   ╚██╔╝  ██║╚██╔╝██║██║██║╚██╗██║
+        ██║        ██║   ██║ ╚═╝ ██║██║██║ ╚████║
+        ╚═╝        ╚═╝   ╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝
+        """
+        print(banner)
+        #os.system("figlet -w 100 Welcome to Pymin")
         print ("\t1.- Manage users and groups")
         print ("\t2.- Web - Apache ")
         print ("\t3.- SSH ")
