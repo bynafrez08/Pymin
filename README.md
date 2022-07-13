@@ -33,7 +33,7 @@ Manage users and groups interface:
 ## To run the program:
 
 ```bash
-$ git clone https://github.com/nafsuuddini08/Pymin.git
+$ git clone https://github.com/bynafrez08/Pymin.git
 $ cd Pymin
 $ chmod +x pymin.py
 $ sudo python3 pymin.py
