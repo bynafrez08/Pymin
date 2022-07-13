@@ -32,6 +32,9 @@ Manage users and groups interface:
 
 ## To run the program:
 
-1. git clone https://github.com/nafsuuddini08/Pymin.git
-2. cd Pymin
-3. sudo python3 pymin.py
+```bash
+$ git clone https://github.com/nafsuuddini08/Pymin.git
+$ cd Pymin
+$ chmod +x pymin.py
+$ sudo python3 pymin.py
+```
