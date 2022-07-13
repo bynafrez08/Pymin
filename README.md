@@ -2,10 +2,10 @@
 
 ##### Only works on linux systems
 
-Pymin is a command line program so that you can manage easily the following services on linux env, ideal for system administrators or if you want to set up a lab without having to configure everything manually.
+Pymin is a command line tool so that you can manage easily the following services on linux env, ideal for system administrators or if you want to set up a lab without having to configure everything manually. Pymin it is inspired by webmin project but the difference here is that pymin it's much faster and it's not require to install any dependencies or hard installation, and it's is integrated for CLI so you can access to a servet with ssh and install pymin and make your life easy.
 
 You can manage linux services like:
-- Manage users (create, list, delete)
+- Manage users
 - Apache2
 - isc-dhcp-server
 - SSH
@@ -30,7 +30,7 @@ Manage users and groups interface:
 
 ![screen1](/images/screen5.png)
 
-## to run the programs we have to use the following command:
+## To run the program:
 
 1. git clone https://github.com/nafsuuddini08/Pymin.git
 2. cd Pymin
